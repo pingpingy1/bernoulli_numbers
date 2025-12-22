@@ -8,6 +8,8 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
 
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+
 \title{Brief Introduction to Bernoulli Numbers}
 \author{Heewon Lee}
 \date{\today}
@@ -369,6 +371,108 @@ The convergence for when $|z| = \pi$ is left as an exercise.
 \end{proof}
 
 \section{Euler-Maclaurin Formula}
-TODO
+We now turn our attention to generalizing this summation to general functions,
+as in, consider the following sum:
+\[
+    S(a,b,h;f) := \sum_{j=1}^n f(a+jh)
+    = f(a+h) + f(a+2h) + f(a+3h) + \cdots,
+\]
+where $n = \frac{b-a}{h}$ and $f$ is a sufficiently good function.
+This whole thing is too complicated, though,
+so let's first look at the first term more closely.
+\begin{align*}
+    f(a + h)
+    &= \sum_{j=0}^\infty \frac{f^{(j)}(a)}{j!} h^j \\
+    &= \sum_{j=0}^\infty \frac{(hD)^j}{j!} f(a) \\
+    &= e^{hD} f(a),
+\end{align*}
+where $D$ denotes the differentiation operator.
+Thus, shifting the argument by $h$ is equivalent to the operator $e^{hD}$!
+We can use this to simplify our sum:
+\begin{align*}
+    S(a,b,h;f)
+    &= \sum_{j=1}^n f(a+jh) \\
+    &= \sum_{j=1}^n \sum_{k=0}^\infty \frac{(jhD)^k}{k!} f(a) \\
+    &= \sum_{k=0}^\infty \frac{(hD)^k}{k!} \sum_{j=1}^n j^k f(a) \\
+    &= \sum_{k=0}^\infty \frac{(hD)^k}{k!} \cdot \frac{1}{k+1} \sum_{j=1}^{k+1} \binom{k+1}{j} B_{k+1-j} n^j f(a) \\
+    &= \sum_{k=1}^\infty (hD)^k \left(
+        \sum_{j=0}^{k+1} \frac{B_{k+1-j}}{(k+1-j)!} \cdot \frac{n^j}{j!}
+        - \frac{B_{k+1}}{(k+1)!}
+    \right) f(a) \\
+    &= (hD)^{-1} \left(
+        \left( \sum_{k=0}^\infty (hD)^k \frac{B_k}{k!} \right)
+        \cdot \left( \sum_{k=0}^\infty (hD)^k \frac{n^k}{k!} \right)
+        - \sum_{k=0}^\infty (hD)^k \frac{B_k}{k!}
+    \right) f(a) \\
+    &= (hD)^{-1} \left( e^{nhD} - 1 \right) \cdot \sum_{k=0}^\infty \frac{B_k h^k}{k!} D^k f(a) \\
+    &= \left( e^{nhD} - 1 \right) \left( (hD)^{-1} + \frac{1}{2} + \sum_{k=1}^\infty \frac{B_{2k}h^{2k-1}}{(2k)!} D^{2k-1} \right) f(a) \\
+    &= \frac{1}{h} \int_a^b dx f(x) + \frac{f(b) - f(a)}{2} + \sum_{k=1}^\infty \frac{B_{2k} h^{2k-1}}{(2k)!} \left( f^{(2k-1)}(b) - f^{(2k-1)}(a) \right)
+\end{align*}
+This final expression is the famed \emph{Euler-Maclaurin formula}!
+Or, adding $f(a)$ to both sides, we get the following two expressions:
+\[
+    f(a+h) + f(a+2h) + \cdots + f(b)
+    = \frac{1}{h} \int_a^b dx f(x)
+      + \frac{f(b) - f(a)}{2}
+      + \sum_{k=1}^\infty \frac{B_{2k} h^{2k-1}}{(2k)!} \left(
+          f^{(2k-1)}(b) - f^{(2k-1)}(a)
+      \right),
+\]
+\[
+    f(a) + f(a+h) + \cdots + f(b)
+    = \frac{1}{h} \int_a^b dx f(x)
+      + \frac{f(b) + f(a)}{2}
+      + \sum_{k=1}^\infty \frac{B_{2k} h^{2k-1}}{(2k)!} \left(
+          f^{(2k-1)}(b) - f^{(2k-1)}(a)
+      \right).
+\]
+Thus revealed is the importance of the Bernoulli numbers:
+they allow the error correction between discrete sums and continuous integrals!
+
+\paragraph{Example: Faulhaber's formulae (again).}
+Let us perform a sanity check for this formula using $f(x) = x^k$.
+\begin{align*}
+    S_k(n)
+    &= (0+0)^k + (0+1)^k + \cdots + (0+n)^k \\
+    &= f(0) + S(0, n, 1; f) \\
+    &= \int_0^n dx x^k + \frac{n^k + 0^k}{2} + \sum_{j=1}^\infty \frac{B_{2j}}{(2j)!} \left( f^{(2j-1)}(n) - f^{2j-1}(0) \right) \\
+    &= \frac{n^{k+1}}{k+1} + \frac{n^k}{2} + \sum_{j=1}^{\floor{\frac{k+1}{2}}} \frac{B_{2j}}{(2j)!} \cdot \frac{k!}{(k-2j+1)!} n^{k-2j+1} \\
+    &= \frac{n^{k+1}}{k+1} + \frac{n^k}{2} + \frac{1}{k+1} \sum_{j=1}^{\floor{\frac{k+1}{2}}} \binom{k+1}{2j} B_{2j} n^{k-2j+1}
+\end{align*}
+We thus obtain the same expression as before.
+
+\paragraph{Example: Riemann zeta function.}
+Let
+\[
+    \zeta(s) := 1^{-s} + 2^{-2} + \cdots.
+\]
+The importance of this function is beyond the scope of this introduction;
+you could win a million buck by studying this thing.
+For complex-valued inputs $s$, this series absolutely converges for $\Re\{s\} > 1$ (see $p$-test).
+Let us attempt to evaluate this sum with Euler-Maclaurin formula with $f(x) = x^{-s}$.
+\begin{align*}
+    \zeta(s)
+    &= f(1) + S(1, \infty, 1; f) \\
+    &= \int_1^\infty \frac{dx}{x^s} + \frac{1}{2} + \sum_{n=1}^\infty \frac{B_{2n}}{(2n)!} \left( -f^{(2n-1)}(1) \right) \\
+    &= \frac{1}{s-1} + \frac{1}{2} + \sum_{n=1}^\infty \frac{B_{2n}}{(2n)!} \frac{\Gamma(s+2n-1)}{\Gamma(s)}
+\end{align*}
+Here, the $\Gamma$ fraction is a shorthand for $s(s+1)\cdots(s+2n-2)$.
+
+Take, for example, $s=-1$:
+\[
+    \zeta(-1)
+    = -\frac{1}{2} + \frac{1}{2} - \frac{B_2}{2}
+    = -\frac{1}{12}.
+\]
+Of course, the series does not converge for $s=-1$,
+the derivation above does not work as is,
+and the na\"ive interpretation yields the nonsensical
+\[
+    1 + 2 + 3 + \cdots \stackrel{?}{=} -\frac{1}{12}.
+\]
+But we are doing physics, so it must \emph{mean} something, right?
+Right?
+... Let's not dwell on this for so long.%
+\footnote{For the interested, the relevant search term is Ramanujan summation.}
 
 \end{document}
