@@ -522,5 +522,42 @@ and the useful formula
 \]
 Omitting the last factor yields the famous \emph{Stirling's approximation} $n! \approx \sqrt{2\pi n} \left( n / {e} \right)^n$.
 With this derivation, we also know what the error terms are!
+
+\section{Taylor Series}\footnote{%
+For this section, all Taylor series is assumed to be centered at 0,
+i.e., Maclaurin series.}
+Let us take another look at the generating function:
+\begin{align*}
+    \sum_{n=0}^\infty \frac{B_n}{n!} x^n
+    &= \frac{x}{1 - e^{-x}} \\
+    &= \frac{xe^{x/{2}}}{e^{x/{2}} - e^{-x/{2}}} \\
+    &= \frac{x}{2} \frac{\left( e^{x/{2}} - e^{-x/{2}} \right) + \left( e^{x/{2}} - e^{-x/{2}} \right)}{e^{x/{2}} - e^{-x/{2}}} \\
+    &= \frac{x}{2} \left( \coth\frac{x}{2} + 1 \right)
+\end{align*}
+Thus, substituting $x$ for $2x$ and cancelling the $B_1$ term, we obtain the Taylor series
+\[
+    \coth x = \sum_{k=0}^\infty \frac{2^{2k} B_{2k}}{(2k)!} x^{2k-1} = x^{-1} + \frac{x}{3} - \frac{x^3}{45} + \cdots.
+\]
+Abusing complex numbers, one finds that
+\[
+    \cot x = i\coth ix = \sum_{k=0}^\infty (-1)^k \frac{2^{2k} B_{2k}}{(2k)!} x^{2k-1}
+    = x^{-1} - \frac{x}{3} - \frac{x^3}{45} - \cdots.
+\]
+One could imagine inverting this series to obtain the Taylor series for $\tanh x$, but we have a better method:
+\[
+    \coth x + \tanh x
+    = \frac{\cosh^2 x + \sinh^2 x}{\cosh x \sinh x}
+    = 2\coth 2x
+\]
+\[
+    \Rightarrow \tanh x = 2\coth 2x - \coth x
+    = \sum_{k=1}^\infty \frac{2^{2k} \left( 2^{2k} - 1 \right) B_{2k}}{(2k)!} x^{2k-1}
+    = x - \frac{x^3}{3} + \frac{2}{5} x^5 - \cdots.
+\]
+Similary,
+\[
+    \tan x = \sum_{k=1}^\infty (-1)^k \frac{2^{2k} \left( 2^{2k} - 1 \right) B_{2k}}{(2k)!} x^{2k-1}
+    = x + \frac{x^3}{3} + \frac{2}{5} x^5 + \cdots.
+\]
 \end{document}
 
