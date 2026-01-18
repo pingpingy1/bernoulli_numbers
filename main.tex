@@ -433,9 +433,9 @@ they allow the error correction between discrete sums and continuous integrals!
 Let us perform a sanity check for this formula using $f(x) = x^k$.
 \begin{align*}
     S_k(n)
-    &= (0+0)^k + (0+1)^k + \cdots + (0+n)^k \\
-    &= f(0) + S(0, n, 1; f) \\
-    &= \int_0^n dx x^k + \frac{n^k + 0^k}{2} + \sum_{j=1}^\infty \frac{B_{2j}}{(2j)!} \left( f^{(2j-1)}(n) - f^{2j-1}(0) \right) \\
+    &= (0+1)^k + \cdots + (0+n)^k \\
+    &= S(0, n, 1; f) \\
+    &= \int_0^n dx x^k + \frac{n^k - 0^k}{2} + \sum_{j=1}^\infty \frac{B_{2j}}{(2j)!} \left( f^{(2j-1)}(n) - f^{2j-1}(0) \right) \\
     &= \frac{n^{k+1}}{k+1} + \frac{n^k}{2} + \sum_{j=1}^{\floor{\frac{k+1}{2}}} \frac{B_{2j}}{(2j)!} \cdot \frac{k!}{(k-2j+1)!} n^{k-2j+1} \\
     &= \frac{n^{k+1}}{k+1} + \frac{n^k}{2} + \frac{1}{k+1} \sum_{j=1}^{\floor{\frac{k+1}{2}}} \binom{k+1}{2j} B_{2j} n^{k-2j+1}
 \end{align*}
@@ -447,7 +447,7 @@ Let
     \zeta(s) := 1^{-s} + 2^{-2} + \cdots.
 \]
 The importance of this function is beyond the scope of this introduction;
-you could win a million buck by studying this thing.
+you could win a million bucks by studying this thing.
 For complex-valued inputs $s$, this series absolutely converges for $\Re\{s\} > 1$ (see $p$-test).
 Let us attempt to evaluate this sum with Euler-Maclaurin formula with $f(x) = x^{-s}$.
 \begin{align*}
@@ -475,4 +475,52 @@ Right?
 ... Let's not dwell on this for so long.%
 \footnote{For the interested, the relevant search term is Ramanujan summation.}
 
+\paragraph{Example: Factorial.}
+We will find an approximation for the factorial function $n! = n \times (n-1) \times \cdots \times 1$.
+\begin{align*}
+    \ln n!
+    &= \ln 1 + \ln 2 + \cdots + \ln n \\
+    &= \int_1^n dx \ln x + \frac{\ln 1 + \ln n}{2}
+     + \sum_{k=1}^\infty \frac{B_{2k}}{(2k)!} \left[ \frac{d^{2k-1}}{dx^{2k-1}} \ln x \right]_1^n \\
+    &= n\ln n - n + 1 + \frac{1}{2}\ln n + \sum_{k=1}^\infty \frac{B_{2k}}{2k(2k-1)} \left( \frac{1}{n^{2k-1}} - 1 \right)
+\end{align*}
+Let us denote the constant
+\[
+    C := 1 - \sum_{k=1}^\infty \frac{B_{2k}}{2k(2k-1)}.
+\]
+With this, we find that
+\[
+    \ln n! = \ln\left( e^C \sqrt{n} \left(\frac{n}{e}\right)^n \right) + \sum_{k=1}^\infty \frac{B_{2k}}{2k(2k-1)n^{2k-1}}
+\]
+where the summation part converges to 0 for $n \rightarrow \infty$.
+So what is the constant $C$?
+It is difficult to evaluate the sum directly, so we turn to the \emph{Wallis product}:
+\[
+    \frac{\pi}{2}
+    = \frac{2 \cdot 2 \cdot 4 \cdot 4 \cdot \cdots}{1 \cdot 3 \cdot 3 \cdot 5 \cdot \cdots}
+    = \lim_{n\rightarrow\infty} \prod_{k=1}^n \frac{4k^2}{4k^2-1},
+\]
+the proof of which can be found by analysing $I_n := \int_0^{\frac{\pi}{2}} dx \sin^n x$.
+\begin{align*}
+    \frac{\pi}{2}
+    &= \lim_{n\rightarrow\infty} \frac{((2n)!!)^2}{(2n-1)!! (2n+1)!!} \\
+    &= \lim_{n\rightarrow\infty} \frac{\left( 2^n n! \right)^2}{(2n+1)\left( \frac{(2n)!}{2^n n!} \right)^2} \\
+    &= \lim_{n\rightarrow\infty} \frac{2^{4n} (n!)^4}{(2n+1) ((2n)!)^2} \\
+    &= \lim_{n\rightarrow\infty} e^{2C} \frac{2^{4n} n^2 \left(\frac{n}{e}\right)^{4n}}{(2n+1) 2n \left(\frac{2n}{e}\right)^{4n}} \\
+    &= \frac{e^{2C}}{4}
+\end{align*}
+\[
+    \Rightarrow C = \ln\sqrt{2\pi}
+\]
+This gives the marginally interesting formula
+\[
+    \sum_{k=1}^\infty \frac{B_{2k}}{2k(2k-1)} = 1 - \ln\sqrt{2\pi}
+\]
+and the useful formula
+\[
+    n! = \sqrt{2\pi n} \left( \frac{n}{e} \right)^n \cdot \exp\left( \frac{1}{12n} - \frac{1}{360n^3} + \frac{1}{1260n^5} - \cdots \right).
+\]
+Omitting the last factor yields the famous \emph{Stirling's approximation} $n! \approx \sqrt{2\pi n} \left( n / {e} \right)^n$.
+With this derivation, we also know what the error terms are!
 \end{document}
+
